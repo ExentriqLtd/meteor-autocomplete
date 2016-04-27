@@ -20,7 +20,7 @@ isWholeField = (rule) ->
 getRegExp = (rule) ->
   unless isWholeField(rule)
     # Expressions for the range from the last word break to the current cursor position
-    new RegExp('(^|\\b|\\s)' + rule.token + '([^"]*)$')
+    new RegExp('(^|\\b|\\s)' + rule.token + '([^@#]*)$')
   else
     # Whole-field behavior - word characters or spaces
     new RegExp('(^)(.*)$')
@@ -276,7 +276,7 @@ class @AutoComplete
     startpos = @element.selectionStart
     fullStuff = @getText()
     val = fullStuff.substring(0, startpos)
-    val = val.replace(@expressions[@matched], "$1" + @rules[@matched].token + replacement)
+    val = val.replace(@expressions[@matched], "$1" + @rules[@matched].token + 'ciao"' + replacement + '"')
     posfix = fullStuff.substring(startpos, fullStuff.length)
     separator = (if posfix.match(/^\s/) then "" else " ")
     finalFight = val + separator + posfix

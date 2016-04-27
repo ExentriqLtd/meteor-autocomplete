@@ -1,8 +1,8 @@
 Package.describe({
-  name: "mizzao:autocomplete",
-  summary: "Client/server autocompletion designed for Meteor's collections and reactivity",
+  name: "calosan:autocomplete",
+  summary: "Client/server autocompletion designed for Meteor's collections and reactivity (Mizzao Fork)",
   version: "0.5.1",
-  git: "https://github.com/mizzao/meteor-autocomplete.git"
+  git: "https://github.com/calosan/meteor-autocomplete.git"
 });
 
 Package.onUse(function (api) {
@@ -31,7 +31,7 @@ Package.onUse(function (api) {
 });
 
 Package.onTest(function(api) {
-  api.use("mizzao:autocomplete");
+  api.use("calosan:autocomplete");
 
   api.use('coffeescript');
   api.use('mongo');
