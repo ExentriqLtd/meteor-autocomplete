@@ -148,34 +148,22 @@ class @AutoComplete
     ###
     i = 0
     breakLoop = false
-    console.log @expressions.length
     while i < @expressions.length
       matches = val.match(@expressions[i])
-      console.log("val: " + val)
       
-      ###
-      matches2	 = val.match(new RegExp('^.*#$'))
-      
-      if matches2
-        @setText(val+'"');
-      ###
-
       # matching -> not matching
       if not matches and @matched is i
         @setMatchedRule(-1)
-        console.log("rule: " + -1)
         breakLoop = true
 
       # not matching -> matching
       if matches and @matched is -1
         @setMatchedRule(i)
-        console.log("rule: " + i + " " + @rules[i].token)
         breakLoop = true
 
       # Did filter change?
       if matches and @filter isnt matches[1]
         @setFilter(matches[1])
-        console.log("filter change: " + matches[1])
         breakLoop = true
 
       break if breakLoop
