@@ -20,7 +20,7 @@ isWholeField = (rule) ->
 getRegExp = (rule) ->
   unless isWholeField(rule)
     # Expressions for the range from the last word break to the current cursor position
-    new RegExp('(^|\\b|\\s)' + rule.token + '([^@#]*)$')
+    new RegExp(rule.token+'(((?! [@#]).)*)$')
   else
     # Whole-field behavior - word characters or spaces
     new RegExp('(^)(.*)$')
@@ -148,22 +148,34 @@ class @AutoComplete
     ###
     i = 0
     breakLoop = false
+    console.log @expressions.length
     while i < @expressions.length
       matches = val.match(@expressions[i])
+      console.log("val: " + val)
+      
+      ###
+      matches2	 = val.match(new RegExp('^.*#$'))
+      
+      if matches2
+        @setText(val+'"');
+      ###
 
       # matching -> not matching
       if not matches and @matched is i
         @setMatchedRule(-1)
+        console.log("rule: " + -1)
         breakLoop = true
 
       # not matching -> matching
       if matches and @matched is -1
         @setMatchedRule(i)
+        console.log("rule: " + i + " " + @rules[i].token)
         breakLoop = true
 
       # Did filter change?
-      if matches and @filter isnt matches[2]
-        @setFilter(matches[2])
+      if matches and @filter isnt matches[1]
+        @setFilter(matches[1])
+        console.log("filter change: " + matches[1])
         breakLoop = true
 
       break if breakLoop
@@ -276,7 +288,7 @@ class @AutoComplete
     startpos = @element.selectionStart
     fullStuff = @getText()
     val = fullStuff.substring(0, startpos)
-    val = val.replace(@expressions[@matched], "$1" + @rules[@matched].token + 'ciao"' + replacement + '"')
+    val = val.replace(@expressions[@matched], @rules[@matched].token + '"' + replacement + '"')
     posfix = fullStuff.substring(startpos, fullStuff.length)
     separator = (if posfix.match(/^\s/) then "" else " ")
     finalFight = val + separator + posfix
