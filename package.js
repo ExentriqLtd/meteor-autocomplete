@@ -1,7 +1,7 @@
 Package.describe({
   name: "calosan:autocomplete",
   summary: "Client/server autocompletion designed for Meteor's collections and reactivity (Mizzao Fork)",
-  version: "0.5.1_1",
+  version: "0.5.1_3",
   git: "https://github.com/calosan/meteor-autocomplete.git"
 });
 

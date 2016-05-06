@@ -20,7 +20,7 @@ isWholeField = (rule) ->
 getRegExp = (rule) ->
   unless isWholeField(rule)
     # Expressions for the range from the last word break to the current cursor position
-    new RegExp(rule.token+'(((?! [@#]).)*)$')
+    new RegExp('('+rule.token+')(((?! [@#]).)*)$')
   else
     # Whole-field behavior - word characters or spaces
     new RegExp('(^)(.*)$')
@@ -71,7 +71,7 @@ class @AutoComplete
     @position = settings.position || "bottom"
 
     @rules = settings.rules
-    validateRule(rule) for rule in @rules
+    # validateRule(rule) for rule in @rules
 
     @expressions = (getRegExp(rule) for rule in @rules)
 
@@ -162,8 +162,8 @@ class @AutoComplete
         breakLoop = true
 
       # Did filter change?
-      if matches and @filter isnt matches[1]
-        @setFilter(matches[1])
+      if matches and @filter isnt matches[2]
+        @setFilter(matches[2])
         breakLoop = true
 
       break if breakLoop
