@@ -24,6 +24,13 @@ getRegExp = (rule) ->
   else
     # Whole-field behavior - word characters or spaces
     new RegExp('(^)(.*)$')
+    
+getNegativeRegExp = (rule) ->
+  unless isWholeField(rule)
+    new RegExp('[@#]".*"((?![@#]).)*$')
+  else
+    #always false match
+    new RegExp('(?=a)b')
 
 getFindParams = (rule, filter, limit) ->
   # This is a different 'filter' - the selector from the settings
@@ -74,6 +81,7 @@ class @AutoComplete
     # validateRule(rule) for rule in @rules
 
     @expressions = (getRegExp(rule) for rule in @rules)
+    @negativeExpressions = (getNegativeRegExp(rule) for rule in @rules)
 
     @matched = -1
     @loaded = true
@@ -150,6 +158,7 @@ class @AutoComplete
     breakLoop = false
     while i < @expressions.length
       matches = val.match(@expressions[i])
+      negativeMatches = val.match(@negativeExpressions[i])
       
       # matching -> not matching
       if not matches and @matched is i
@@ -157,12 +166,12 @@ class @AutoComplete
         breakLoop = true
 
       # not matching -> matching
-      if matches and @matched is -1
+      if matches and not negativeMatches and @matched is -1
         @setMatchedRule(i)
         breakLoop = true
 
       # Did filter change?
-      if matches and @filter isnt matches[2]
+      if matches and not negativeMatches and @filter isnt matches[2]
         @setFilter(matches[2])
         breakLoop = true
 
