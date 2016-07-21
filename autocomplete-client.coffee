@@ -20,14 +20,22 @@ isWholeField = (rule) ->
 getRegExp = (rule) ->
   unless isWholeField(rule)
     # Expressions for the range from the last word break to the current cursor position
-    new RegExp('('+rule.token+')(((?! [@#]).)*)$')
+    new RegExp('(?:^|\\s)('+rule.token+')(((?! [&@#]).)*)$')
+  else
+    # Whole-field behavior - word characters or spaces
+    new RegExp('(^)(.*)$')
+    
+getRegExpNoSpace = (rule) ->
+  unless isWholeField(rule)
+    # Expressions for the range from the last word break to the current cursor position
+    new RegExp('('+rule.token+')(((?! [&@#]).)*)$')
   else
     # Whole-field behavior - word characters or spaces
     new RegExp('(^)(.*)$')
     
 getNegativeRegExp = (rule) ->
   unless isWholeField(rule)
-    new RegExp('[@#]".*"((?![@#]).)*$')
+    new RegExp('[@#]".*"((?![&@#]).)*$')
   else
     #always false match
     new RegExp('(?=a)b')
@@ -81,6 +89,7 @@ class @AutoComplete
     # validateRule(rule) for rule in @rules
 
     @expressions = (getRegExp(rule) for rule in @rules)
+    @expressionsNoSpace = (getRegExpNoSpace(rule) for rule in @rules)
     @negativeExpressions = (getNegativeRegExp(rule) for rule in @rules)
 
     @matched = -1
@@ -285,7 +294,7 @@ class @AutoComplete
     startpos = @element.selectionStart
     fullStuff = @getText()
     val = fullStuff.substring(0, startpos)
-    val = val.replace(@expressions[@matched], @rules[@matched].token + '"' + replacement + '"')
+    val = val.replace(@expressionsNoSpace[@matched], @rules[@matched].token + '"' + replacement + '"')
     posfix = fullStuff.substring(startpos, fullStuff.length)
     separator = (if posfix.match(/^\s/) then "" else " ")
     finalFight = val + separator + posfix
