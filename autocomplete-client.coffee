@@ -35,7 +35,7 @@ getRegExpNoSpace = (rule) ->
     
 getNegativeRegExp = (rule) ->
   unless isWholeField(rule)
-    new RegExp('[@#]".*"((?![&@#]).)*$')
+    new RegExp('[&@#]".*"((?!\\s[&@#]).)*$')
   else
     #always false match
     new RegExp('(?=a)b')
