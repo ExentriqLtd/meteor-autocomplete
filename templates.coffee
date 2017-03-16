@@ -46,5 +46,14 @@ Template._autocompleteContainer.events
   "mouseenter .-autocomplete-item": (e, t) -> t.data.onItemHover(this, e)
 
 Template._autocompleteContainer.helpers
-  empty: -> @filteredList().count() is 0
-  noMatchTemplate: -> @matchedRule().noMatchTemplate || Template._noMatch
+  empty: ->
+    return @filteredList()?.count() is 0
+
+  index: ->
+    return this.index()
+
+  tailTemplate: ->
+    @matchedRule().tailTemplate
+
+  noMatchTemplate: ->
+    @matchedRule().noMatchTemplate || Template._noMatch

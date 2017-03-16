@@ -10,29 +10,67 @@
 
 <template name="_autocompleteContainer">
     {{#if isShowing}}
-    <div class='-autocomplete-container'>
-        {{#if isLoaded}}
-            {{#unless empty}}
-            <ul class='-autocomplete-list'>
-                {{#each filteredList}}
-                <li class="-autocomplete-item">
-                    {{#with ../currentTemplate }}
-                        {{#with ..}}  {{! original 'data' context to itemTemplate}}
-                            {{> ..}}  {{! return value from itemTemplate }}
-                        {{/with}}
+        {{#if index}}
+            {{#EasySearch.Area index=index }}
+            {{/EasySearch.Area}}
+            <div class='-autocomplete-container'>
+                {{#EasySearch.IfInputEmpty index=index}}
+                    <!--nothing-->
+                {{else}}
+                    <ul class='-autocomplete-list'>
+                        {{#EasySearch.Each index=../index }}
+                            <li class="-autocomplete-item">
+                                {{#with ../../../currentTemplate }}
+                                    {{#with ..}}  {{! original 'data' context to itemTemplate}}
+                                        {{>  ..}}  {{! return value from itemTemplate }}
+                                    {{/with}}
+                                {{/with}}
+                            </li>
+                        {{/EasySearch.Each}}
+                        {{#EasySearch.InfiniteScroll index=../index}}
+                            <i>Loading...</i>
+                        {{/EasySearch.InfiniteScroll}}
+                        {{#if ../tailTemplate}}
+                            {{>Template.dynamic template=../tailTemplate}}
+                        {{/if}}
+                    </ul>
+                {{/EasySearch.IfInputEmpty}}
+                {{#EasySearch.IfNoResults index=index}}
+                    {{#with .. }}
+                        {{> noMatchTemplate }}
                     {{/with}}
-                </li>
-                {{/each}}
-            </ul>
-            {{else}}
-                {{> noMatchTemplate }}
-            {{/unless}}
+                {{/EasySearch.IfNoResults}}
+                {{#EasySearch.IfSearching index=index}}
+                    <i>Loading...</i>
+                {{/EasySearch.IfSearching}}
+
+            </div>
         {{else}}
-            <i>loading...</i>
+            <div class='-autocomplete-container'>
+                {{#if isLoaded}}
+                    {{#unless empty}}
+                        <ul class='-autocomplete-list'>
+                            {{#each filteredList}}
+                                <li class="-autocomplete-item">
+                                    {{#with ../currentTemplate }}
+                                        {{#with ..}}  {{! original 'data' context to itemTemplate}}
+                                            {{> ..}}  {{! return value from itemTemplate }}
+                                        {{/with}}
+                                    {{/with}}
+                                </li>
+                            {{/each}}
+                        </ul>
+                    {{else}}
+                        {{> noMatchTemplate }}
+                    {{/unless}}
+                {{else}}
+                    <i>loading...</i>
+                {{/if}}
+            </div>
         {{/if}}
-    </div>
     {{/if}}
 </template>
+
 
 <template name="_noMatch">
     (<i>no matches</i>)

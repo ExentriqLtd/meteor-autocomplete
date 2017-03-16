@@ -6,7 +6,7 @@ validateRule = (rule) ->
   if rule.subscription? and rule.collection?
     throw new Error("Rule cannot specify both a server-side subscription and a client/server collection to search simultaneously")
 
-  unless rule.subscription? or Match.test(rule.collection, Match.OneOf(String, Mongo.Collection))
+  unless rule.subscription? or (!rule.index and Match.test(rule.collection, Match.OneOf(String, Mongo.Collection)))
     throw new Error("Collection to search must be either a Mongo collection or server-side name")
 
   # XXX back-compat message, to be removed
@@ -103,6 +103,14 @@ class @AutoComplete
     # autosubscribe to the record set published by the server based on the filter
     # This will tear down server subscriptions when they are no longer being used.
     @sub = null
+    @compIndex = Deps.autorun =>
+      rule = @matchedRule()
+      return unless rule?
+      if rule.onSearch
+        rule.onSearch(@getFilter())
+      if rule.index
+        $('.area-trigger').trigger($.Event('onSearch'), @getFilter())
+
     @comp = Deps.autorun =>
       # Stop any existing sub immediately, don't wait
       @sub?.stop()
@@ -125,6 +133,7 @@ class @AutoComplete
   teardown: ->
     # Stop the reactive computation we started for this autocomplete instance
     @comp.stop()
+    @compIndex.stop()
 
   # reactive getters and setters for @filter and the currently matched rule
   matchedRule: ->
@@ -152,6 +161,11 @@ class @AutoComplete
     return if val is @loaded # Don't cause redraws unnecessarily
     @loaded = val
     @loadingDep.changed()
+
+  index: ->
+    @ruleDep.depend()
+    if @matched >= 0
+      return @rules[@matched].index
 
   onKeyUp: ->
     return unless @$element # Don't try to do this while loading
@@ -188,11 +202,14 @@ class @AutoComplete
       i++
 
   onKeyDown: (e) ->
+    console.log('onKeyDown', e.keyCode)
     return if @matched is -1 or (@constructor.KEYS.indexOf(e.keyCode) < 0)
 
     switch e.keyCode
       when 9, 13 # TAB, ENTER
         if @select() # Don't jump fields or submit if select successful
+          console.log('ENTER, prevent')
+          e.stopImmediatePropagation();
           e.preventDefault()
           e.stopPropagation()
       # preventDefault needed below to avoid moving cursor when selecting
@@ -220,7 +237,9 @@ class @AutoComplete
       @hideList()
     , 500
 
-  onItemClick: (doc, e) => @processSelection(doc, @rules[@matched])
+  onItemClick: (doc, e) =>
+    e.preventDefault()
+    @processSelection(doc, @rules[@matched])
 
   onItemHover: (doc, e) ->
     @tmplInst.$(".-autocomplete-item").removeClass("selected")
@@ -244,26 +263,27 @@ class @AutoComplete
     return AutoCompleteRecords.find({}, options) if isServerSearch(rule)
 
     # Otherwise, search on client
-    return rule.collection.find(selector, options)
+    return rule.collection?.find(selector, options)
 
   isShowing: ->
     rule = @matchedRule()
     # Same rules as above
-    showing = rule? and (rule.token or @getFilter())
+    showing = rule? and ((rule.token or @getFilter()) or rule.index?)
 
     # Do this after the render
     if showing
       Meteor.defer =>
         @positionContainer()
         @ensureSelection()
-
     return showing
 
   # Replace text with currently selected item
   select: ->
     node = @tmplInst.find(".-autocomplete-item.selected")
+    console.log node
     return false unless node?
     doc = Blaze.getData(node)
+    console.log doc
     return false unless doc # Don't select if nothing matched
 
     @processSelection(doc, @rules[@matched])
@@ -356,6 +376,8 @@ class @AutoComplete
 
   # Select next item in list
   next: ->
+    if @ensureSelection()
+      return
     currentItem = @tmplInst.$(".-autocomplete-item.selected")
     return unless currentItem.length # Don't try to iterate an empty list
     currentItem.removeClass("selected")
@@ -368,6 +390,8 @@ class @AutoComplete
 
   # Select previous item in list
   prev: ->
+    if @ensureSelection()
+      return
     currentItem = @tmplInst.$(".-autocomplete-item.selected")
     return unless currentItem.length # Don't try to iterate an empty list
     currentItem.removeClass("selected")
