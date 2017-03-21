@@ -103,9 +103,12 @@ class @AutoComplete
     # autosubscribe to the record set published by the server based on the filter
     # This will tear down server subscriptions when they are no longer being used.
     @sub = null
+    @elClass = ".-autocomplete-item"
     @compIndex = Deps.autorun =>
       rule = @matchedRule()
       return unless rule?
+      @elClass = rule.elClass || ".-autocomplete-item"
+      console.log(@elClass)
       if rule.onSearch
         rule.onSearch(@getFilter())
       if rule.index
@@ -242,8 +245,8 @@ class @AutoComplete
     @processSelection(doc, @rules[@matched])
 
   onItemHover: (doc, e) ->
-    @tmplInst.$(".-autocomplete-item").removeClass("selected")
-    $(e.target).closest(".-autocomplete-item").addClass("selected")
+    @tmplInst.$(@elClass).removeClass("selected")
+    $(e.target).closest(@elClass).addClass("selected")
 
   filteredList: ->
     # @ruleDep.depend() # optional as long as we use depend on filter, because list will always get re-rendered
@@ -279,7 +282,7 @@ class @AutoComplete
 
   # Replace text with currently selected item
   select: ->
-    node = @tmplInst.find(".-autocomplete-item.selected")
+    node = @tmplInst.find(@elClass + ".selected")
     console.log node
     return false unless node?
     doc = Blaze.getData(node)
@@ -368,17 +371,17 @@ class @AutoComplete
 
   ensureSelection : ->
     # Re-render; make sure selected item is something in the list or none if list empty
-    selectedItem = @tmplInst.$(".-autocomplete-item.selected")
+    selectedItem = @tmplInst.$(@elClass + ".selected")
 
     unless selectedItem.length
       # Select anything
-      @tmplInst.$(".-autocomplete-item:first-child").addClass("selected")
+      @tmplInst.$(@elClass + ":first-child").addClass("selected")
 
   # Select next item in list
   next: ->
     if @ensureSelection()
       return
-    currentItem = @tmplInst.$(".-autocomplete-item.selected")
+    currentItem = @tmplInst.$(@elClass + ".selected")
     return unless currentItem.length # Don't try to iterate an empty list
     currentItem.removeClass("selected")
 
@@ -386,13 +389,13 @@ class @AutoComplete
     if next.length
       next.addClass("selected")
     else # End of list or lost selection; Go back to first item
-      @tmplInst.$(".-autocomplete-item:first-child").addClass("selected")
+      @tmplInst.$(@elClass + ":first-child").addClass("selected")
 
   # Select previous item in list
   prev: ->
     if @ensureSelection()
       return
-    currentItem = @tmplInst.$(".-autocomplete-item.selected")
+    currentItem = @tmplInst.$(@elClass + ".selected")
     return unless currentItem.length # Don't try to iterate an empty list
     currentItem.removeClass("selected")
 
@@ -400,7 +403,7 @@ class @AutoComplete
     if prev.length
       prev.addClass("selected")
     else # Beginning of list or lost selection; Go to end of list
-      @tmplInst.$(".-autocomplete-item:last-child").addClass("selected")
+      @tmplInst.$(@elClass + ":last-child").addClass("selected")
 
   # This doesn't need to be reactive because list already changes reactively
   # and will cause all of the items to re-render anyway

@@ -1,11 +1,15 @@
 <template name="inputAutocomplete">
-    <input type="text" {{attributes}}>
-    {{> autocompleteContainer}}
+    <div class="autocomplete-wrapper">
+        <input type="text" {{attributes}}>
+        {{> autocompleteContainer}}
+    </div>
 </template>
 
 <template name="textareaAutocomplete">
-    <textarea {{attributes}}>{{> UI.contentBlock}}</textarea>
-    {{> autocompleteContainer}}
+    <div class="autocomplete-wrapper">
+        <textarea {{attributes}}>{{> UI.contentBlock}}</textarea>
+        {{> autocompleteContainer}}
+    </div>
 </template>
 
 <template name="_autocompleteContainer">
@@ -18,21 +22,33 @@
                     <!--nothing-->
                 {{else}}
                     <ul class='-autocomplete-list'>
-                        {{#EasySearch.Each index=../index }}
-                            <li class="-autocomplete-item">
-                                {{#with ../../../currentTemplate }}
-                                    {{#with ..}}  {{! original 'data' context to itemTemplate}}
-                                        {{>  ..}}  {{! return value from itemTemplate }}
+                        {{#with ..}}
+                            {{#unless hide}}
+                                {{#EasySearch.Each index=index }}
+                                    {{#with ../..}}
+                                        {{#if removeHolder}}
+                                            {{#with currentTemplate }}
+                                                {{#with ../..}}  {{! original 'data' context to itemTemplate}}
+                                                    {{>  ..}}  {{! return value from itemTemplate }}
+                                                {{/with}}
+                                            {{/with}}
+                                        {{else}}
+                                            <li class="-autocomplete-item">
+                                                {{#with currentTemplate }}
+                                                    {{#with ../..}}  {{! original 'data' context to itemTemplate}}
+                                                        {{>  ..}}  {{! return value from itemTemplate }}
+                                                    {{/with}}
+                                                {{/with}}
+                                            </li>
+                                        {{/if}}
                                     {{/with}}
-                                {{/with}}
-                            </li>
-                        {{/EasySearch.Each}}
-                        {{#EasySearch.InfiniteScroll index=../index}}
-                            <i>Loading...</i>
-                        {{/EasySearch.InfiniteScroll}}
-                        {{#if ../tailTemplate}}
-                            {{>Template.dynamic template=../tailTemplate}}
-                        {{/if}}
+                                {{/EasySearch.Each}}
+                                {{#EasySearch.InfiniteScroll index=../index}}
+                                    <i>Loading...</i>
+                                {{/EasySearch.InfiniteScroll}}
+                            {{/unless}}
+                            {{>Template.dynamic template=template data=templateArgs}}
+                        {{/with}}
                     </ul>
                 {{/EasySearch.IfInputEmpty}}
                 {{#EasySearch.IfNoResults index=index}}

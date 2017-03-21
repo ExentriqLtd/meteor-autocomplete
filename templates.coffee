@@ -3,7 +3,7 @@ acEvents =
   "keydown": (e, t) -> t.ac.onKeyDown(e)
   "keyup": (e, t) -> t.ac.onKeyUp(e)
   "focus": (e, t) -> t.ac.onFocus(e)
-  "blur": (e, t) -> t.ac.onBlur(e)
+#  "blur": (e, t) -> t.ac.onBlur(e)
 
 Template.inputAutocomplete.events(acEvents)
 Template.textareaAutocomplete.events(acEvents)
@@ -29,6 +29,27 @@ autocompleteHelpers = {
 Template.inputAutocomplete.helpers(autocompleteHelpers)
 Template.textareaAutocomplete.helpers(autocompleteHelpers)
 
+Template.inputAutocomplete.onRendered ->
+  @outsideClick = (evt) =>
+    unless $(evt.target).closest('.autocomplete-wrapper, .-autocomplete-container').length
+      @ac.onBlur(evt)
+      @ac.hideList()
+  $(document).on('click', @outsideClick)
+
+Template.textareaAutocomplete.onRendered ->
+  @outsideClick = (evt) =>
+    unless $(evt.target).closest('.autocomplete-wrapper, .-autocomplete-container').length or $(evt.target).is(@.ac.$element)
+      @ac.onBlur(evt)
+      @ac.hideList()
+  $(document).on('click', @outsideClick)
+
+Template.inputAutocomplete.onDestroyed ->
+  $(document).off('click', @outsideClick)
+
+Template.textareaAutocomplete.onDestroyed ->
+  $(document).off('click', @outsideClick)
+
+
 Template._autocompleteContainer.rendered = ->
   @data.tmplInst = this
 
@@ -42,8 +63,12 @@ Template._autocompleteContainer.destroyed = ->
 
 Template._autocompleteContainer.events
   # t.data is the AutoComplete instance; `this` is the data item
-  "click .-autocomplete-item": (e, t) -> t.data.onItemClick(this, e)
-  "mouseenter .-autocomplete-item": (e, t) -> t.data.onItemHover(this, e)
+  "click ": (e, t) ->
+    if $(e.target).closest(t.data.matchedRule().itemClass || '.-autocomplete-item').length
+      t.data.onItemClick(this, e)
+  "mouseenter ": (e, t) ->
+    if $(e.target).closest(t.data.matchedRule().itemClass || '.-autocomplete-item').length
+      t.data.onItemHover(this, e)
 
 Template._autocompleteContainer.helpers
   empty: ->
@@ -52,8 +77,17 @@ Template._autocompleteContainer.helpers
   index: ->
     return this.index()
 
-  tailTemplate: ->
-    @matchedRule().tailTemplate
+  template: ->
+    return @matchedRule().tailTemplate
+
+  templateArgs: ->
+    return @matchedRule().tailTemplateArgs || {}
+
+  hide: ->
+    return @matchedRule().hide?()
+
+  removeHolder: ->
+    return @matchedRule().removeHolder
 
   noMatchTemplate: ->
     @matchedRule().noMatchTemplate || Template._noMatch
