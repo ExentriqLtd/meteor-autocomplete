@@ -74,6 +74,10 @@ Template._autocompleteContainer.helpers
   empty: ->
     return @filteredList()?.count() is 0
 
+  updateCollapsible: ->
+    Tracker.afterFlush ->
+      $('.eq-ui-collapsible').eq_collapsible()
+
   index: ->
     return this.index()
 

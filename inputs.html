@@ -17,49 +17,63 @@
         {{#if index}}
             {{#EasySearch.Area index=index }}
             {{/EasySearch.Area}}
-            <div class='-autocomplete-container'>
+            <div class='-autocomplete-container fixed-collapsible'>
                 {{#EasySearch.IfInputEmpty index=index}}
                     <!--nothing-->
                 {{else}}
-                    <ul class='-autocomplete-list'>
-                        {{#with ..}}
-                            {{#unless hide}}
-                                {{#EasySearch.Each index=index }}
-                                    {{#with ../..}}
-                                        {{#if removeHolder}}
-                                            {{#with currentTemplate }}
-                                                {{#with ../..}}  {{! original 'data' context to itemTemplate}}
-                                                    {{>  ..}}  {{! return value from itemTemplate }}
+                    <!--<ul class="eq-ui-collapsible search " data-collapsible="accordion">-->
+                        <!--{{updateCollapsible}}-->
+                        <!--<li class="section {{#with ..}}{{#if hide}} hidden {{/if}}{{/with}}">-->
+                            <!--<div class="eq-ui-collapsible-header active">-->
+                                <!--<a>Contacts</a>-->
+                                <!--<span class="arrow top"></span>-->
+                            <!--</div>-->
+                            <!--<div class="eq-ui-collapsible-body">-->
+                                <ul class='-autocomplete-list'>
+                                    {{#with ..}}
+                                        {{#unless hide}}
+                                            {{#EasySearch.Each index=index }}
+                                                {{#with ../..}}
+                                                    {{#if removeHolder}}
+                                                        {{#with currentTemplate }}
+                                                            {{#with ../..}}  {{! original 'data' context to itemTemplate}}
+                                                                {{>  ..}}  {{! return value from itemTemplate }}
+                                                            {{/with}}
+                                                        {{/with}}
+                                                    {{else}}
+                                                        <li class="-autocomplete-item">
+                                                            {{#with currentTemplate }}
+                                                                {{#with ../..}}  {{! original 'data' context to itemTemplate}}
+                                                                    {{>  ..}}  {{! return value from itemTemplate }}
+                                                                {{/with}}
+                                                            {{/with}}
+                                                        </li>
+                                                    {{/if}}
                                                 {{/with}}
-                                            {{/with}}
-                                        {{else}}
-                                            <li class="-autocomplete-item">
-                                                {{#with currentTemplate }}
-                                                    {{#with ../..}}  {{! original 'data' context to itemTemplate}}
-                                                        {{>  ..}}  {{! return value from itemTemplate }}
-                                                    {{/with}}
-                                                {{/with}}
-                                            </li>
-                                        {{/if}}
+                                            {{/EasySearch.Each}}
+                                            {{# EasySearch.InfiniteScroll index=../index}}
+                                                <i>Loading...</i>
+                                            {{/EasySearch.InfiniteScroll}}
+                                        {{/unless}}
                                     {{/with}}
-                                {{/EasySearch.Each}}
-                                {{#EasySearch.InfiniteScroll index=../index}}
-                                    <i>Loading...</i>
-                                {{/EasySearch.InfiniteScroll}}
-                            {{/unless}}
-                            {{>Template.dynamic template=template data=templateArgs}}
-                        {{/with}}
-                    </ul>
+                                </ul>
+                            <!--</div>-->
+                        <!--</li>-->
+                        <!--<li class="section">-->
+                            <!--<div class="eq-ui-collapsible-header {{#with ..}}{{#if hide}} hidden {{/if}}{{/with}}">-->
+                                <!--<a>Other Contacts</a>-->
+                                <!--<span class="arrow top"></span>-->
+                            <!--</div>-->
+                            <!--<div class="eq-ui-collapsible-body {{#with ..}}{{#if hide}} full-size {{/if}}{{/with}}">-->
+                                <!--<ul>-->
+                                    <!--{{#with ..}}-->
+                                        <!--{{>Template.dynamic template=template data=templateArgs}}-->
+                                    <!--{{/with}}-->
+                                <!--</ul>-->
+                            <!--</div>-->
+                        <!--</li>-->
+                    <!--</ul>-->
                 {{/EasySearch.IfInputEmpty}}
-                {{#EasySearch.IfNoResults index=index}}
-                    {{#with .. }}
-                        {{> noMatchTemplate }}
-                    {{/with}}
-                {{/EasySearch.IfNoResults}}
-                {{#EasySearch.IfSearching index=index}}
-                    <i>Loading...</i>
-                {{/EasySearch.IfSearching}}
-
             </div>
         {{else}}
             <div class='-autocomplete-container'>
