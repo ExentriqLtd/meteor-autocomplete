@@ -63,7 +63,7 @@ Template._autocompleteContainer.destroyed = ->
 
 Template._autocompleteContainer.events
   # t.data is the AutoComplete instance; `this` is the data item
-  "click ": (e, t) ->
+  "click .-autocomplete-list>li": (e, t) ->
     if $(e.target).closest(t.data.matchedRule().itemClass || '.-autocomplete-item').length
       t.data.onItemClick(this, e)
   "mouseenter ": (e, t) ->
