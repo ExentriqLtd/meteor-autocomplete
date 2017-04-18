@@ -21,14 +21,19 @@
                 {{#EasySearch.IfInputEmpty index=index}}
                     <!--nothing-->
                 {{else}}
-                    <!--<ul class="eq-ui-collapsible search " data-collapsible="accordion">-->
-                        <!--{{updateCollapsible}}-->
-                        <!--<li class="section {{#with ..}}{{#if hide}} hidden {{/if}}{{/with}}">-->
-                            <!--<div class="eq-ui-collapsible-header active">-->
-                                <!--<a>Contacts</a>-->
-                                <!--<span class="arrow top"></span>-->
-                            <!--</div>-->
-                            <!--<div class="eq-ui-collapsible-body">-->
+                    <ul class="eq-ui-collapsible search " data-collapsible="expandable">
+                        {{#with ..}}
+                            {{#unless hidePrepend}}
+                                {{>Template.dynamic template=prependTemplate data=prependTemplateArgs}}
+                            {{/unless}}
+                        {{/with}}
+                        {{updateCollapsible}}
+                        <li class="section {{#with ..}}{{#if hide}} hidden {{/if}}{{/with}}">
+                            <div class="eq-ui-collapsible-header active hidden">
+                                <a>Contacts</a>
+                                <span class="arrow top"></span>
+                            </div>
+                            <div class="eq-ui-collapsible-body">
                                 <ul class='-autocomplete-list'>
                                     {{#with ..}}
                                         {{#unless hide}}
@@ -57,22 +62,22 @@
                                         {{/unless}}
                                     {{/with}}
                                 </ul>
-                            <!--</div>-->
-                        <!--</li>-->
-                        <!--<li class="section">-->
-                            <!--<div class="eq-ui-collapsible-header {{#with ..}}{{#if hide}} hidden {{/if}}{{/with}}">-->
-                                <!--<a>Other Contacts</a>-->
-                                <!--<span class="arrow top"></span>-->
-                            <!--</div>-->
-                            <!--<div class="eq-ui-collapsible-body {{#with ..}}{{#if hide}} full-size {{/if}}{{/with}}">-->
-                                <!--<ul>-->
-                                    <!--{{#with ..}}-->
-                                        <!--{{>Template.dynamic template=template data=templateArgs}}-->
-                                    <!--{{/with}}-->
-                                <!--</ul>-->
-                            <!--</div>-->
-                        <!--</li>-->
-                    <!--</ul>-->
+                            </div>
+                        </li>
+                        <li class="section active">
+                            <div class="eq-ui-collapsible-header active {{#with ..}}{{#if hideTail}} hidden {{/if}}{{/with}}">
+                                <a>Other Contacts</a>
+                                <span class="arrow top"></span>
+                            </div>
+                            <div class="eq-ui-collapsible-body">
+                                <ul>
+                                    {{#with ..}}
+                                        {{>Template.dynamic template=template data=templateArgs}}
+                                    {{/with}}
+                                </ul>
+                            </div>
+                        </li>
+                    </ul>
                 {{/EasySearch.IfInputEmpty}}
             </div>
         {{else}}

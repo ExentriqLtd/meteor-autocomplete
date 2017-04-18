@@ -84,11 +84,20 @@ Template._autocompleteContainer.helpers
   template: ->
     return @matchedRule().tailTemplate
 
-  templateArgs: ->
-    return @matchedRule().tailTemplateArgs || {}
+  prependTemplate: ->
+    return @matchedRule().prependTemplate
+
+  prependTemplateArgs: ->
+    return @matchedRule().prependTemplateArgs || {}
 
   hide: ->
     return @matchedRule().hide?()
+
+  hideTail: ->
+    return @matchedRule().hideTail?()
+
+  hidePrepend: ->
+    return @matchedRule().hidePrepend?()
 
   removeHolder: ->
     return @matchedRule().removeHolder
