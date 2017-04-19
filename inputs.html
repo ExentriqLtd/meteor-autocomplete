@@ -1,6 +1,7 @@
 <template name="inputAutocomplete">
     <div class="autocomplete-wrapper">
         <input type="text" {{attributes}}>
+        {{> UI.contentBlock}}
         {{> autocompleteContainer}}
     </div>
 </template>
@@ -69,7 +70,7 @@
                                 <a>Other Contacts</a>
                                 <span class="arrow top"></span>
                             </div>
-                            <div class="eq-ui-collapsible-body">
+                            <div class="eq-ui-collapsible-body {{#with ..}}{{#if hideTail}} hidden {{/if}}{{/with}}">
                                 <ul>
                                     {{#with ..}}
                                         {{>Template.dynamic template=template data=templateArgs}}

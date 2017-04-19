@@ -19,9 +19,10 @@ autocompleteHelpers = {
 
     # Set nodes on render in the autocomplete class
     this.onViewReady ->
-      ac.element = this.parentView.firstNode()
-      ac.$element = $(ac.element)
-
+      n = this.parentView.firstNode()
+      n = $(n).find('input,textarea')
+      ac.element = n[0]
+      ac.$element = n
     return Blaze.With(ac, -> Template._autocompleteContainer)
   )
 }
@@ -63,6 +64,10 @@ Template._autocompleteContainer.destroyed = ->
 
 Template._autocompleteContainer.events
   # t.data is the AutoComplete instance; `this` is the data item
+  "click .autocomplete-selectable": (e, t) ->
+    console.log('click')
+    t.data.onItemClick(this, e)
+
   "click .-autocomplete-list>li": (e, t) ->
     if $(e.target).closest(t.data.matchedRule().itemClass || '.-autocomplete-item').length
       t.data.onItemClick(this, e)

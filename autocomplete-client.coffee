@@ -67,7 +67,10 @@ getFindParams = (rule, filter, limit) ->
 
   return [ selector, options ]
 
-getField = (obj, str) ->
+getField = (obj, str, inst) ->
+  if inst.rules[inst.matched].replacement
+    return inst.rules[inst.matched].replacement(obj)
+
   obj = obj[key] for key in str.split(".")
   return obj
 
@@ -171,10 +174,11 @@ class @AutoComplete
       return @rules[@matched].index
 
   onKeyUp: ->
+    console.log('onKeyUp', @$element)
     return unless @$element # Don't try to do this while loading
     startpos = @element.selectionStart
     val = @getText().substring(0, startpos)
-
+    console.log(startpos, val, @getText())
     ###
       Matching on multiple expressions.
       We always go from a matched state to an unmatched one
@@ -293,7 +297,7 @@ class @AutoComplete
     return true
 
   processSelection: (doc, rule) ->
-    replacement = getField(doc, rule.field)
+    replacement = getField(doc, rule.field, @)
 
     unless isWholeField(rule)
       @replace(replacement, rule)
