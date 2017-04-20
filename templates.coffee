@@ -89,6 +89,9 @@ Template._autocompleteContainer.helpers
   template: ->
     return @matchedRule().tailTemplate
 
+  templateArgs: ->
+    return @matchedRule().tailTemplateArgs
+
   prependTemplate: ->
     return @matchedRule().prependTemplate
 
