@@ -20,7 +20,7 @@ isWholeField = (rule) ->
 getRegExp = (rule) ->
   unless isWholeField(rule)
     # Expressions for the range from the last word break to the current cursor position
-    new RegExp('(?:^|\\s)('+rule.token+')(((?! [&@#]).)*)$')
+    new RegExp('(?:^|\\s)('+rule.token+')(\\S((?! [&@#]).)*)$')
   else
     # Whole-field behavior - word characters or spaces
     new RegExp('(^)(.*)$')
@@ -329,6 +329,10 @@ class @AutoComplete
 
     newPosition = val.length + 1
     @element.setSelectionRange(newPosition, newPosition)
+    if Meteor.isCordova and device?.platform?.toLowerCase() is 'android'
+      setTimeout =>
+        @element.selectionStart = newPosition
+      , 50
     return
 
   hideList: ->

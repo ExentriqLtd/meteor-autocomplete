@@ -69,10 +69,10 @@ Template._autocompleteContainer.events
     t.data.onItemClick(this, e)
 
   "click .-autocomplete-list>li": (e, t) ->
-    if $(e.target).closest(t.data.matchedRule().itemClass || '.-autocomplete-item').length
+    if $(e.target).closest(t.data.matchedRule()?.itemClass || '.-autocomplete-item').length
       t.data.onItemClick(this, e)
   "mouseenter ": (e, t) ->
-    if $(e.target).closest(t.data.matchedRule().itemClass || '.-autocomplete-item').length
+    if $(e.target).closest(t.data.matchedRule()?.itemClass || '.-autocomplete-item').length
       t.data.onItemHover(this, e)
 
 Template._autocompleteContainer.helpers
